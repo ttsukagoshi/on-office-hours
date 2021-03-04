@@ -1,9 +1,9 @@
-/* exported resetTriggers, createOfficeHourCheckTrigger, officeHourCheck */
+/* exported initialTrigger, resetTriggers, createOfficeHourCheckTrigger, officeHourCheck */
 
 // 実行するGoogleアカウントのカレンダーに登録されている「日本の祝日」カレンダーのIDを参照する↓
 const CAL_ID_HOLIDAY_JA = 'en.japanese#holiday@group.v.calendar.google.com';
 // オフィスアワーの開始・終了時刻をHHmmss形式のstringで設定↓
-const OFFICE_HOURS = { start: '090000', end: '170000' }; 
+const OFFICE_HOURS = { start: '090000', end: '170000' };
 // エラーとなったときの再実行までの時間（ミリ秒）↓
 const RETRY_MILLISEC = 5 * 60 * 1000;
 // officeHourCheckがエラーとなったときの再実行までの時間（ミリ秒）↓
@@ -14,8 +14,38 @@ const UP_KEY_OFFICE_OPEN_STATUS = 'officeOpenStatus';
 const UP_KEY_SCRIPT_STATUS = 'scriptStatus';
 
 /**
- * 一連の時刻判定トリガーをリセットする。
- * 1日1回、午前0～1時で実行するようにトリガー設定。
+ * 最初に手動で実行する。
+ */
+function initialTrigger() {
+  var now = new Date();
+  var upDate = Utilities.formatDate(now, TIMEZONE, 'yyyyMMdd');
+  var nowTime = Utilities.formatDate(now, TIMEZONE, 'HHmmss');
+  var officeOpenStatus = 'CLOSED';
+  if (!isWeekendOrHolidayJa(now) && nowTime >= OFFICE_HOURS.start && nowTime <= OFFICE_HOURS.end) {
+    officeOpenStatus = 'OPEN';
+  }
+  var up = PropertiesService.getUserProperties()
+    .setProperty(UP_KEY_DATE, upDate)
+    .setProperty(UP_KEY_OFFICE_OPEN_STATUS, officeOpenStatus)
+    .setProperty(UP_KEY_SCRIPT_STATUS, 'ERROR');
+  ScriptApp.getProjectTriggers().forEach(trigger => {
+    if (trigger.getHandlerFunction() === 'resetTriggers') {
+      ScriptApp.deleteTrigger(trigger);
+    }
+  });
+  resetTriggers();
+  ScriptApp.newTrigger('resetTriggers')
+    .timeBased()
+    .atHour(0)
+    .everyDays(1)
+    .create();
+  console.log(up.getProperties()); // log
+}
+
+/**
+ * 日付が変わったり、scriptStatusがERRORとなっている場合に、
+ * 一連の時刻判定トリガーを初期化して、再設定する。
+ * initialTriggerによって、1日1回、午前0～1時で実行するようにトリガー設定される。
  */
 function resetTriggers() {
   var scriptStatus = 'ERROR';
@@ -118,7 +148,7 @@ function officeHourCheck() {
         ScriptApp.getProjectTriggers().forEach(trigger => {
           if (trigger.getHandlerFunction() === 'officeHourCheck') {
             ScriptApp.deleteTrigger(trigger);
-            console.log('Trigger for officeHourCheck is deleted.') // log
+            console.log('Trigger for officeHourCheck is deleted.'); // log
           }
         });
       }
@@ -134,7 +164,7 @@ function officeHourCheck() {
         ScriptApp.getProjectTriggers().forEach(trigger => {
           if (trigger.getHandlerFunction() === 'officeHourCheck') {
             ScriptApp.deleteTrigger(trigger);
-            console.log('Trigger for officeHourCheck is deleted.') // log
+            console.log('Trigger for officeHourCheck is deleted.'); // log
           }
         });
       }
