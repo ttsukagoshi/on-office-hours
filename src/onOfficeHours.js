@@ -1,3 +1,5 @@
+/* exported resetTriggers, createOfficeHourCheckTrigger, officeHourCheck */
+
 // 実行するGoogleアカウントのカレンダーに登録されている「日本の祝日」カレンダーのIDを参照する↓
 const CAL_ID_HOLIDAY_JA = 'en.japanese#holiday@group.v.calendar.google.com';
 // オフィスアワーの開始・終了時刻をHHmmss形式のstringで設定↓
