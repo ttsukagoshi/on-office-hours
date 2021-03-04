@@ -1,4 +1,4 @@
-/* exported resetTriggers, createOfficeHourCheckTrigger, officeHourCheck */
+/* exported initialTrigger, resetTriggers, createOfficeHourCheckTrigger, officeHourCheck */
 
 // 実行するGoogleアカウントのカレンダーに登録されている「日本の祝日」カレンダーのIDを参照する↓
 const CAL_ID_HOLIDAY_JA = 'en.japanese#holiday@group.v.calendar.google.com';
