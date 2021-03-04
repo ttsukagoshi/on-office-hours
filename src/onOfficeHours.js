@@ -118,7 +118,7 @@ function officeHourCheck() {
         ScriptApp.getProjectTriggers().forEach(trigger => {
           if (trigger.getHandlerFunction() === 'officeHourCheck') {
             ScriptApp.deleteTrigger(trigger);
-            console.log('Trigger for officeHourCheck is deleted.') // log
+            console.log('Trigger for officeHourCheck is deleted.'); // log
           }
         });
       }
@@ -134,7 +134,7 @@ function officeHourCheck() {
         ScriptApp.getProjectTriggers().forEach(trigger => {
           if (trigger.getHandlerFunction() === 'officeHourCheck') {
             ScriptApp.deleteTrigger(trigger);
-            console.log('Trigger for officeHourCheck is deleted.') // log
+            console.log('Trigger for officeHourCheck is deleted.'); // log
           }
         });
       }
