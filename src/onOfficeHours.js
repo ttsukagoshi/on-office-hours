@@ -3,7 +3,7 @@
 // 実行するGoogleアカウントのカレンダーに登録されている「日本の祝日」カレンダーのIDを参照する↓
 const CAL_ID_HOLIDAY_JA = 'en.japanese#holiday@group.v.calendar.google.com';
 // オフィスアワーの開始・終了時刻をHHmmss形式のstringで設定↓
-const OFFICE_HOURS = { start: '090000', end: '170000' };
+const OFFICE_HOURS = { start: '100000', end: '130000' };
 // エラーとなったときの再実行までの時間（ミリ秒）↓
 const RETRY_MILLISEC = 5 * 60 * 1000;
 // officeHourCheckがエラーとなったときの再実行までの時間（ミリ秒）↓
