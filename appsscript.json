@@ -3,7 +3,7 @@
   "dependencies": {
   },
   "exceptionLogging": "STACKDRIVER",
-  "runtimeVersion": "V8",
+  "runtimeVersion": "DEPRECATED_ES5",
   "oauthScopes": [
     "https://www.googleapis.com/auth/userinfo.email",
     "https://www.googleapis.com/auth/script.triggers",
