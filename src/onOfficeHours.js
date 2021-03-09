@@ -17,13 +17,13 @@ var UP_KEY_SCRIPT_STATUS = 'scriptStatus';
  * 最初に手動で実行する。
  */
 function initialTrigger() {
-  Logger.log('[initialTrigger] Initiating...'); // log
+  console.log('[initialTrigger] Initiating...'); // log
   var now = new Date();
   var upDate = Utilities.formatDate(now, TIMEZONE, 'yyyyMMdd');
   var nowTime = Utilities.formatDate(now, TIMEZONE, 'HHmmss');
   var officeOpenStatus = 'CLOSED';
   var outOfOfficeHours = isWeekendOrHolidayJa(now);
-  Logger.log(
+  console.log(
     '[initialTrigger] outOfOfficeHours: ' +
       outOfOfficeHours +
       '\nnowTime: ' +
@@ -38,7 +38,7 @@ function initialTrigger() {
     nowTime >= OFFICE_HOURS.start &&
     nowTime <= OFFICE_HOURS.end
   ) {
-    Logger.log(
+    console.log(
       '[initialTrigger] Switching officeOpenStatus to "OPEN"\noutOfOfficeHours: ' +
         outOfOfficeHours +
         '\nnowTime: ' +
@@ -53,7 +53,7 @@ function initialTrigger() {
   ScriptApp.getProjectTriggers().forEach(function (trigger) {
     if (trigger.getHandlerFunction() === 'resetTriggers') {
       ScriptApp.deleteTrigger(trigger);
-      Logger.log('[initialTrigger] Deleted trigger for resetTriggers'); // log
+      console.log('[initialTrigger] Deleted trigger for resetTriggers'); // log
     }
   });
   resetTriggers();
@@ -62,7 +62,7 @@ function initialTrigger() {
     .atHour(0)
     .everyDays(1)
     .create();
-  Logger.log(
+  console.log(
     '[initialTrigger] Complete. Current user properties:\n\n' +
       JSON.stringify(up.getProperties())
   ); // log
@@ -74,7 +74,7 @@ function initialTrigger() {
  * initialTriggerによって、1日1回、午前0～1時で実行するようにトリガー設定される。
  */
 function resetTriggers() {
-  Logger.log('[resetTriggers] Initiating...'); // log
+  console.log('[resetTriggers] Initiating...'); // log
   var scriptStatus = 'ERROR';
   var today = new Date();
   var up = PropertiesService.getUserProperties();
@@ -85,7 +85,7 @@ function resetTriggers() {
       todayString !== up.getProperty(UP_KEY_DATE) ||
       up.getProperty(UP_KEY_SCRIPT_STATUS) !== 'RUNNING'
     ) {
-      Logger.log(
+      console.log(
         '[resetTriggers] User Property: ' +
           up.getProperty(UP_KEY_DATE) +
           '-> todayString: ' +
@@ -99,13 +99,13 @@ function resetTriggers() {
         var handler = trigger.getHandlerFunction();
         if (handler !== 'resetTriggers') {
           ScriptApp.deleteTrigger(trigger);
-          Logger.log('[resetTriggers] Deleted trigger for ' + handler); // log
+          console.log('[resetTriggers] Deleted trigger for ' + handler); // log
         }
       });
       // 平日判定。
       // 土日祝日の場合は、次の日まで本トリガー以外のトリガーを発動させない。
       if (!isWeekendOrHolidayJa(today)) {
-        Logger.log('Today is a weekday.'); //log
+        console.log('Today is a weekday.'); //log
         ScriptApp.newTrigger('createOfficeHourCheckTrigger')
           .timeBased()
           .atHour(parseOfficeHourTrigger(OFFICE_HOURS.start))
@@ -118,11 +118,11 @@ function resetTriggers() {
           .nearMinute(40)
           .everyDays(1)
           .create();
-        Logger.log('[resetTriggers] Set trigger officeHourCheck'); //log
+        console.log('[resetTriggers] Set trigger officeHourCheck'); //log
       }
     }
     scriptStatus = 'RUNNING';
-    Logger.log(
+    console.log(
       '[resetTriggers] ' +
         UP_KEY_DATE +
         ': ' +
@@ -139,10 +139,10 @@ function resetTriggers() {
       .timeBased()
       .after(RETRY_MILLISEC)
       .create();
-    Logger.log('[resetTriggers] ' + error.message); //log
+    console.log('[resetTriggers] ' + error.message); //log
   } finally {
     up.setProperty(UP_KEY_SCRIPT_STATUS, scriptStatus);
-    Logger.log('[resetTriggers] scriptStatus: ' + scriptStatus); //log
+    console.log('[resetTriggers] scriptStatus: ' + scriptStatus); //log
   }
 }
 
@@ -151,7 +151,7 @@ function resetTriggers() {
  * 1分おきのトリガーを設定する。
  */
 function createOfficeHourCheckTrigger() {
-  Logger.log('[createOfficeHourCheckTrigger] Initiating...'); // log
+  console.log('[createOfficeHourCheckTrigger] Initiating...'); // log
   var scriptStatus = 'ERROR';
   try {
     ScriptApp.newTrigger('officeHourCheck')
@@ -159,7 +159,7 @@ function createOfficeHourCheckTrigger() {
       .everyMinutes(1)
       .create();
     scriptStatus = 'RUNNING';
-    Logger.log('[createOfficeHourCheckTrigger] Set trigger officeHourCheck'); //log
+    console.log('[createOfficeHourCheckTrigger] Set trigger officeHourCheck'); //log
   } catch (error) {
     // メールでエラー通知
     var myEmail = Session.getActiveUser().getEmail();
@@ -173,13 +173,13 @@ function createOfficeHourCheckTrigger() {
       .timeBased()
       .after(RETRY_MILLISEC)
       .create();
-    Logger.log('[createOfficeHourCheckTrigger] ' + error.message); //log
+    console.log('[createOfficeHourCheckTrigger] ' + error.message); //log
   } finally {
     PropertiesService.getUserProperties().setProperty(
       UP_KEY_SCRIPT_STATUS,
       scriptStatus
     );
-    Logger.log('[createOfficeHourCheckTrigger] scriptStatus: ' + scriptStatus); //log
+    console.log('[createOfficeHourCheckTrigger] scriptStatus: ' + scriptStatus); //log
   }
 }
 
@@ -187,7 +187,7 @@ function createOfficeHourCheckTrigger() {
  * オフィスアワーを判定する。必要に応じてオフィスアワーの開始・終了時にそれぞれ実行させたい処理を挿入する。
  */
 function officeHourCheck() {
-  Logger.log('[officeHourCheck] Initiating...'); // log
+  console.log('[officeHourCheck] Initiating...'); // log
   var scriptStatus = 'ERROR';
   var up = PropertiesService.getUserProperties();
   var officeOpenStatus = up.getProperty(UP_KEY_OFFICE_OPEN_STATUS);
@@ -195,13 +195,13 @@ function officeHourCheck() {
   try {
     if (!officeOpenStatus || officeOpenStatus === 'CLOSED') {
       // 現在オフィスが閉まっている場合
-      Logger.log(
+      console.log(
         '[officeHourCheck] Office is closed.\n\nofficeOpenStatus: ' +
           officeOpenStatus
       ); //log
       if (now >= OFFICE_HOURS.start) {
         officeOpenStatus = 'OPEN';
-        Logger.log(
+        console.log(
           '[officeHourCheck] Office is now open.\n\nnow: ' +
             now +
             '\nOFFICE_HOURS start: ' +
@@ -217,7 +217,7 @@ function officeHourCheck() {
         ScriptApp.getProjectTriggers().forEach(function (trigger) {
           if (trigger.getHandlerFunction() === 'officeHourCheck') {
             ScriptApp.deleteTrigger(trigger);
-            Logger.log(
+            console.log(
               '[officeHourCheck] Trigger for officeHourCheck is deleted.'
             ); // log
           }
@@ -225,13 +225,13 @@ function officeHourCheck() {
       }
     } else if (officeOpenStatus === 'OPEN') {
       // 現在オフィスが開いている場合
-      Logger.log(
+      console.log(
         '[officeHourCheck] Office is open.\n\nofficeOpenStatus: ' +
           officeOpenStatus
       ); // log
       if (now > OFFICE_HOURS.end) {
         officeOpenStatus = 'CLOSED';
-        Logger.log(
+        console.log(
           '[officeHourCheck] Office is now closed.\n\nnow: ' +
             now +
             '\nOFFICE_HOURS start: ' +
@@ -247,7 +247,7 @@ function officeHourCheck() {
         ScriptApp.getProjectTriggers().forEach(function (trigger) {
           if (trigger.getHandlerFunction() === 'officeHourCheck') {
             ScriptApp.deleteTrigger(trigger);
-            Logger.log(
+            console.log(
               '[officeHourCheck] Trigger for officeHourCheck is deleted.'
             ); // log
           }
@@ -258,7 +258,9 @@ function officeHourCheck() {
     }
     up.setProperty(UP_KEY_OFFICE_OPEN_STATUS, officeOpenStatus);
     scriptStatus = 'RUNNING';
-    Logger.log('[officeHourCheck] Final officeOpenStatus: ' + officeOpenStatus); // log
+    console.log(
+      '[officeHourCheck] Final officeOpenStatus: ' + officeOpenStatus
+    ); // log
   } catch (error) {
     // メールでエラー通知
     var myEmail = Session.getActiveUser().getEmail();
@@ -268,10 +270,10 @@ function officeHourCheck() {
       .timeBased()
       .after(RETRY_MILLISEC_OFFICE_HOUR_CHECK)
       .create();
-    Logger.log('[officeHourCheck] ' + error.message); // log
+    console.log('[officeHourCheck] ' + error.message); // log
   } finally {
     up.setProperty(UP_KEY_SCRIPT_STATUS, scriptStatus);
-    Logger.log('[officeHourCheck] scriptStatus: ' + scriptStatus); // log
+    console.log('[officeHourCheck] scriptStatus: ' + scriptStatus); // log
   }
 }
 
@@ -294,7 +296,7 @@ function isWeekendOrHolidayJa(dateObj) {
  * @param {string} officeHourString
  */
 function parseOfficeHourTrigger(officeHourString) {
-  Logger.log(
+  console.log(
     '[parseOfficeHourTrigger] Initiating with officeHourString: ' +
       officeHourString +
       '...'
@@ -305,22 +307,26 @@ function parseOfficeHourTrigger(officeHourString) {
       'OFFICE_HOURS.start and OFFICE_HOURS.end must be between 000000 and 235959'
     );
   }
-  var officeHour = Math.trunc(officeHourNum / 10000);
+  var officeHour = MathTrunc(officeHourNum / 10000);
   var triggerTime = officeHour === 0 ? 23 : officeHour - 1;
-  Logger.log('[parseOfficeHourTrigger] Returning triggerTime: ' + triggerTime); // log
+  console.log('[parseOfficeHourTrigger] Returning triggerTime: ' + triggerTime); // log
   return triggerTime;
+}
+
+function MathTrunc(v) {
+  return v < 0 ? Math.ceil(v) : Math.floor(v);
 }
 
 /**
  * オフィスアワー時に実行させたい処理
  */
 function functionToExecuteWhenOpen() {
-  Logger.log('[functionToExecuteWhenOpen] Office is now open.'); // log
+  console.log('[functionToExecuteWhenOpen] Office is now open.'); // log
 }
 
 /**
  * オフィスアワー外で実行させたい処理
  */
 function functionToExecuteWhenClosed() {
-  Logger.log('[functionToExecuteWhenClosed] Office is now closed.'); // log
+  console.log('[functionToExecuteWhenClosed] Office is now closed.'); // log
 }
