@@ -25,4 +25,3 @@ updates:
       prefix: 'npm'
       include: 'scope'
     target-branch: 'main'
-    
