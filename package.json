@@ -1,0 +1,30 @@
+{
+  "name": "on-office-hours",
+  "version": "1.0.0",
+  "description": "A framework for executing triggered functions on Google Apps Script based on the user's office hours. The below script is a sample made based on the assumption that the user is based in Japan and that their office hours are on the weekdays, but the basic idea can be applied to all kinds of office hours.",
+  "main": "onOfficeHours.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ttsukagoshi/on-office-hours.git"
+  },
+  "author": "ttsukagoshi",
+  "license": "Apache-2.0",
+  "bugs": {
+    "url": "https://github.com/ttsukagoshi/on-office-hours/issues"
+  },
+  "homepage": "https://github.com/ttsukagoshi/on-office-hours#readme",
+  "devDependencies": {
+    "@google/clasp": "^2.4.1",
+    "@types/google-apps-script": "^1.0.37",
+    "@typescript-eslint/eslint-plugin": "^4.29.3",
+    "@typescript-eslint/parser": "^4.29.3",
+    "eslint": "^7.32.0",
+    "eslint-config-prettier": "^8.3.0",
+    "eslint-plugin-prettier": "^3.4.1",
+    "prettier": "^2.3.2",
+    "typescript": "^4.3.5"
+  }
+}
